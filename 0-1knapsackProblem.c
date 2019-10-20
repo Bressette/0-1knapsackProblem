@@ -11,7 +11,7 @@ int generateItems(int *cost, int *weight, int numItems)
     }
 }
 
-void printArray(int *array, int size)
+void printIntArray(int *array, int size)
 {
     for(int i = 0; i < size; i++)
     {
@@ -20,21 +20,17 @@ void printArray(int *array, int size)
     printf("\n");
 }
 
-int min(int *array, int size)
+void printFloatArray(float *array, int size)
 {
-    int minimum = array[0];
-
-    for(int i = 1; i < size; i++)
+    for(int i = 0; i < size; i++)
     {
-        if(array[i] < minimum)
-            minimum = array[i];
+        printf("%f ", array[i]);
     }
-
-    return minimum;
+    printf("\n");
 }
 
 
-void merge(int *array, int start, int end)
+void merge(float *array, int start, int end)
 {
     int mid = (start+end)/2;
 
@@ -42,11 +38,11 @@ void merge(int *array, int start, int end)
     int j = mid + 1;
     int k = start;
 
-    int temp[100];
+    float temp[100];
 
     while(i <= mid && j <= end)
     {
-        if(array[i] < array[j])
+        if(array[i] > array[j])
         {
             temp[k++] = array[i++];
         }
@@ -73,7 +69,7 @@ void merge(int *array, int start, int end)
 
 }
 
-void mergeSort(int *array, int start, int end)
+void mergeSort(float *array, int start, int end)
 {
     if(start == end)
         return;
@@ -88,19 +84,27 @@ void mergeSort(int *array, int start, int end)
 
 void knapsackSolve(int *cost, int *weight, int numItems, int maxWeight)
 {
-    int *costWeightRatio = malloc(sizeof(int) * numItems);
+    float *costWeightRatio = malloc(sizeof(float) * numItems);
 
     for(int i = 0; i < numItems; i++)
     {
-        costWeightRatio[i] = cost[i]/weight[i];
+        costWeightRatio[i] = (float)(cost[i])/(float)(weight[i]);
     }
 
-    int *sortedRatio = malloc(sizeof(int) * numItems);
+    float *sortedRatio = malloc(sizeof(float) * numItems);
 
     for(int i = 0; i < numItems; i++)
     {
         sortedRatio[i] = costWeightRatio[i];
     }
+
+
+    printFloatArray(sortedRatio, numItems);
+
+    mergeSort(sortedRatio, 0, numItems-1);
+
+    printFloatArray(sortedRatio, numItems);
+
 
 
 
@@ -119,11 +123,11 @@ int main()
     weight = malloc(sizeof(int) * numItems);
 
     generateItems(cost, weight, numItems);
-    printArray(cost, numItems);
-    printArray(weight, numItems);
+    printIntArray(cost, numItems);
+    printIntArray(weight, numItems);
 
-    mergeSort(cost, 0, numItems-1);
-    printArray(cost, numItems);
+
+    knapsackSolve(cost, weight, numItems, 20);
 
     return 0;
 }
