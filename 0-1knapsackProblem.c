@@ -92,21 +92,62 @@ void knapsackSolve(int *cost, int *weight, int numItems, int maxWeight)
     }
 
     float *sortedRatio = malloc(sizeof(float) * numItems);
+    int *sortedWeight = malloc(sizeof(int) * numItems);
+
 
     for(int i = 0; i < numItems; i++)
     {
         sortedRatio[i] = costWeightRatio[i];
     }
 
-
-    printFloatArray(sortedRatio, numItems);
+    int *sortedIndex = malloc(sizeof(int) * numItems);
 
     mergeSort(sortedRatio, 0, numItems-1);
 
-    printFloatArray(sortedRatio, numItems);
+    for(int i = 0; i < numItems; i++)
+    {
+        for(int j = 0; j < numItems; j++)
+        {
+            if(sortedRatio[i] == costWeightRatio[j])
+            {
+                sortedIndex[i] = j;
+                break;
+            }
+        }
+    }
 
+    int *solutionIndex = malloc(sizeof(int) * numItems);
+    int currentWeight = 0;
+    int currentItem = 0;
+    int numSolutionItems = 0;
 
+    while(currentWeight < maxWeight && currentItem < numItems)
+    {
+        if((currentWeight + weight[sortedIndex[currentItem]]) <= maxWeight)
+        {
+            currentWeight += weight[sortedIndex[currentItem]];
+            solutionIndex[numSolutionItems++] = sortedIndex[currentItem++];
+        }
+        else
+            currentItem++;
+    }
 
+    printf("The items that should be chosen are: ");
+
+    for(int i = 0; i < numSolutionItems; i++)
+    {
+        printf("%d ", solutionIndex[i]);
+    }
+
+    printf("\n");
+
+    int profit = 0;
+    for(int i = 0; i < numSolutionItems; i++)
+    {
+        profit += cost[solutionIndex[i]];
+    }
+
+    printf("The total profit is: $%d\n", profit);
 
 
 
@@ -118,16 +159,19 @@ int main()
 {
     srand(time(0));
     int numItems = 10;
-    int *cost, *weight;
+    int *cost, *weight, *solutionIndices;
     cost = malloc(sizeof(int) * numItems);
     weight = malloc(sizeof(int) * numItems);
+    solutionIndices = malloc(sizeof(int) * numItems);
 
     generateItems(cost, weight, numItems);
+    printf("The price of each item is: \n");
     printIntArray(cost, numItems);
+    printf("The weight of each item is: \n");
     printIntArray(weight, numItems);
 
 
-    knapsackSolve(cost, weight, numItems, 20);
+    knapsackSolve(cost, weight, numItems, 30);
 
     return 0;
 }
