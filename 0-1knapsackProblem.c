@@ -82,9 +82,30 @@ void mergeSort(float *array, int start, int end)
     merge(array, start, end);
 }
 
+int *sortIndex(int *sortedIndices, int size, int *costWeightRatio, int *sortedRatio)
+{
+    for(int i = 0; i < size; i++)
+    {
+        for(int j = 0; j < size; j++)
+        {
+            if(sortedRatio[i] == costWeightRatio[j])
+            {
+                sortedIndices[i] = j;
+                break;
+            }
+        }
+    }
+
+    return sortedIndices;
+}
+
 void knapsackSolve(int *cost, int *weight, int numItems, int maxWeight)
 {
     float *costWeightRatio = malloc(sizeof(float) * numItems);
+    int *solutionIndex = malloc(sizeof(int) * numItems);
+    int currentWeight = 0;
+    int currentItem = 0;
+    int numSolutionItems = 0;
 
     for(int i = 0; i < numItems; i++)
     {
@@ -104,22 +125,8 @@ void knapsackSolve(int *cost, int *weight, int numItems, int maxWeight)
 
     mergeSort(sortedRatio, 0, numItems-1);
 
-    for(int i = 0; i < numItems; i++)
-    {
-        for(int j = 0; j < numItems; j++)
-        {
-            if(sortedRatio[i] == costWeightRatio[j])
-            {
-                sortedIndex[i] = j;
-                break;
-            }
-        }
-    }
+    sortedIndex = sortIndex(sortedIndex, numItems, costWeightRatio, sortedRatio);
 
-    int *solutionIndex = malloc(sizeof(int) * numItems);
-    int currentWeight = 0;
-    int currentItem = 0;
-    int numSolutionItems = 0;
 
     while(currentWeight < maxWeight && currentItem < numItems)
     {
@@ -132,14 +139,9 @@ void knapsackSolve(int *cost, int *weight, int numItems, int maxWeight)
             currentItem++;
     }
 
-    printf("The items that should be chosen are: ");
 
-    for(int i = 0; i < numSolutionItems; i++)
-    {
-        printf("%d ", solutionIndex[i]);
-    }
-
-    printf("\n");
+    printf("The indices of the items that should be selected are: ");
+    printIntArray(solutionIndex, numSolutionItems);
 
     int profit = 0;
     for(int i = 0; i < numSolutionItems; i++)
