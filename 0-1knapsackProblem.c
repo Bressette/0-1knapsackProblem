@@ -2,6 +2,7 @@
 #include "stdio.h"
 #include "time.h"
 
+//Function that generates random prices and weights for items using rand()
 int generateItems(int *cost, int *weight, int numItems)
 {
     for(int i = 0; i < numItems; i++)
@@ -11,6 +12,7 @@ int generateItems(int *cost, int *weight, int numItems)
     }
 }
 
+//function that prints an int array
 void printIntArray(int *array, int size)
 {
     for(int i = 0; i < size; i++)
@@ -20,6 +22,7 @@ void printIntArray(int *array, int size)
     printf("\n");
 }
 
+//function that prints a float array
 void printFloatArray(float *array, int size)
 {
     for(int i = 0; i < size; i++)
@@ -29,7 +32,7 @@ void printFloatArray(float *array, int size)
     printf("\n");
 }
 
-
+//Function that merges subarrays from merge sort
 void merge(float *array, int start, int end)
 {
     int mid = (start+end)/2;
@@ -69,6 +72,11 @@ void merge(float *array, int start, int end)
 
 }
 
+
+/*function that implements mergeSort to sort a float array by splitting
+ *an array into subarrays using recursion and merging the subarrays
+ *into a sorted array
+ */
 void mergeSort(float *array, int start, int end)
 {
     if(start == end)
@@ -82,6 +90,7 @@ void mergeSort(float *array, int start, int end)
     merge(array, start, end);
 }
 
+//function that sorts the index for the new sorted ratio
 int *sortIndex(int *sortedIndices, int size, int *costWeightRatio, int *sortedRatio)
 {
     for(int i = 0; i < size; i++)
@@ -99,6 +108,14 @@ int *sortIndex(int *sortedIndices, int size, int *costWeightRatio, int *sortedRa
     return sortedIndices;
 }
 
+/*Function that solves the 0-1 knapsack problem by creating a cost-to-weight
+ *ratio that is then sorted to give the best items to add to the knapsack.
+ *The ratio is sorted and the indices are updated for the sorted ratio and
+ *held in an array that is used for accessing the elements that relate to
+ *the sorted ratios. Then the elements are added to the knapsack until the
+ *knapsack is filled or there are no more items that can be added
+ *and the solution is printed to the console
+ */
 void knapsackSolve(int *cost, int *weight, int numItems, int maxWeight)
 {
     float *costWeightRatio = malloc(sizeof(float) * numItems);
@@ -106,7 +123,9 @@ void knapsackSolve(int *cost, int *weight, int numItems, int maxWeight)
     int currentWeight = 0;
     int currentItem = 0;
     int numSolutionItems = 0;
+    int profit = 0;
 
+    //creates cost to weight ratio and stores it in costWeightRatio[]
     for(int i = 0; i < numItems; i++)
     {
         costWeightRatio[i] = (float)(cost[i])/(float)(weight[i]);
@@ -115,37 +134,23 @@ void knapsackSolve(int *cost, int *weight, int numItems, int maxWeight)
     float *sortedRatio = malloc(sizeof(float) * numItems);
     int *sortedWeight = malloc(sizeof(int) * numItems);
 
-
+    //copies the ratio into sortedRatio
     for(int i = 0; i < numItems; i++)
     {
         sortedRatio[i] = costWeightRatio[i];
     }
 
     int *sortedIndex = malloc(sizeof(int) * numItems);
-
+    //sorts the cost to weight ratio
     mergeSort(sortedRatio, 0, numItems-1);
 
-<<<<<<< HEAD
+    //maps the old indices to the order of the elements in the sorted ratio
     sortedIndex = sortIndex(sortedIndex, numItems, costWeightRatio, sortedRatio);
-=======
-    for(int i = 0; i < numItems; i++)
-    {
-        for(int j = 0; j < numItems; j++)
-        {
-            if(sortedRatio[i] == costWeightRatio[j])
-            {
-                sortedIndex[i] = j;
-                break;
-            }
-        }
-    }
->>>>>>> 3bbc779f1dd4562bc1e91cadc968196b477f959c
 
-    int *solutionIndex = malloc(sizeof(int) * numItems);
-    int currentWeight = 0;
-    int currentItem = 0;
-    int numSolutionItems = 0;
-
+    /*selects the items by adding the elements from the sorted ratio if they can be added
+     *without exceeding the total weight and continues until all items have been checked or
+     *the max weight is reached
+     */
     while(currentWeight < maxWeight && currentItem < numItems)
     {
         if((currentWeight + weight[sortedIndex[currentItem]]) <= maxWeight)
@@ -157,27 +162,14 @@ void knapsackSolve(int *cost, int *weight, int numItems, int maxWeight)
             currentItem++;
     }
 
-<<<<<<< HEAD
 
+    //prints the elements that should be added to the knapsack
     printf("The indices of the items that should be selected are: ");
     printIntArray(solutionIndex, numSolutionItems);
-=======
-    printf("The items that should be chosen are: ");
-
-    for(int i = 0; i < numSolutionItems; i++)
-    {
-        printf("%d ", solutionIndex[i]);
-    }
-
-    printf("\n");
->>>>>>> 3bbc779f1dd4562bc1e91cadc968196b477f959c
-
-    int profit = 0;
     for(int i = 0; i < numSolutionItems; i++)
     {
         profit += cost[solutionIndex[i]];
     }
-
     printf("The total profit is: $%d\n", profit);
 
 
@@ -195,13 +187,14 @@ int main()
     weight = malloc(sizeof(int) * numItems);
     solutionIndices = malloc(sizeof(int) * numItems);
 
+    //initialize cost, weight arrays and print their contents
     generateItems(cost, weight, numItems);
     printf("The price of each item is: \n");
     printIntArray(cost, numItems);
     printf("The weight of each item is: \n");
     printIntArray(weight, numItems);
 
-
+    //solves the problem and prints the solution in the function
     knapsackSolve(cost, weight, numItems, 30);
 
     return 0;
